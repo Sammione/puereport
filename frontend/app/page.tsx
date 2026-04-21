@@ -14,7 +14,7 @@ export default function Home() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState<{role: 'ai' | 'user', message: string, status?: 'loading' | 'success' | 'error'}[]>([
-    { role: 'ai', message: 'Strategic report synchronized. I am ready to refine any specific sections for your presentation.' }
+    { role: 'ai', message: 'Report is ready. Let me know if you want to change anything.' }
   ]);
   
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -45,7 +45,7 @@ export default function Home() {
       setPreviewHtml(result.value);
     } catch (err) {
       console.error("Preview error:", err);
-      setPreviewHtml("<p class='text-red-500 text-center'>Error rendering document preview.</p>");
+      setPreviewHtml("<p class='text-red-500 text-center'>Error showing preview.</p>");
     }
   };
 
@@ -92,7 +92,7 @@ export default function Home() {
     setChatInput('');
     setChatHistory(prev => [...prev, { role: 'user', message: userMsg }]);
     
-    setChatHistory(prev => [...prev, { role: 'ai', message: 'Analyzing strategic modifications...', status: 'loading' }]);
+    setChatHistory(prev => [...prev, { role: 'ai', message: 'Updating report...', status: 'loading' }]);
 
     try {
       const response = await fetch(`${API_BASE}/revise_report`, {
@@ -104,7 +104,7 @@ export default function Home() {
         }),
       });
 
-      if (!response.ok) throw new Error("Revision failed");
+      if (!response.ok) throw new Error("Update failed");
 
       const resBlob = await response.blob();
       setBlob(resBlob);
@@ -116,13 +116,13 @@ export default function Home() {
       setChatHistory(prev => {
         const newHist = [...prev];
         newHist.pop(); // Remove loading
-        return [...newHist, { role: 'ai', message: 'Strategies updated. The report has been recalibrated based on your feedback.', status: 'success' }];
+        return [...newHist, { role: 'ai', message: 'Report updated based on your changes.', status: 'success' }];
       });
     } catch (err: any) {
       setChatHistory(prev => {
         const newHist = [...prev];
         newHist.pop();
-        return [...newHist, { role: 'ai', message: `Operational error: ${err.message}`, status: 'error' }];
+        return [...newHist, { role: 'ai', message: `Error: ${err.message}`, status: 'error' }];
       });
     }
   };
@@ -151,8 +151,8 @@ export default function Home() {
               DREEF<span className="text-indigo-500">.</span>
             </h1>
             <p className="text-lg text-slate-400 font-medium tracking-wide">
-              Strategic Intelligence Platform<br/>
-              <span className="text-slate-500 font-normal">Premium PUE Strategic Reporting</span>
+              PUE Report Generator<br/>
+              <span className="text-slate-500 font-normal">Professional Reports from Excel Data</span>
             </p>
           </div>
 
@@ -166,16 +166,16 @@ export default function Home() {
                   file ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-slate-800 hover:border-slate-700 bg-white/[0.02]'
                 }`}>
                   <div className={`mb-6 p-5 rounded-2xl transition-all duration-700 ${
-                    file ? 'bg-indigo-500 text-white rotate-0 scale-110 shadow-2xl shadow-indigo-500/30' : 'bg-slate-900/50 text-slate-500 group-hover:scale-105 group-hover:text-slate-400 border border-white/5'
+                    file ? 'bg-indigo-50 text-white rotate-0 scale-110 shadow-2xl shadow-indigo-500/30' : 'bg-slate-900/50 text-slate-500 group-hover:scale-105 group-hover:text-slate-400 border border-white/5'
                   }`}>
                     {file ? <FileText className="w-10 h-10" /> : <Upload className="w-10 h-10" />}
                   </div>
                   <div className="text-center">
                     <h3 className="text-xl font-bold text-white mb-1">
-                      {file ? file.name : 'Ingest Data Repository'}
+                      {file ? file.name : 'Upload Excel Data'}
                     </h3>
                     <p className="text-slate-500 font-medium text-sm">
-                      {file ? `${(file.size / 1024).toFixed(1)} KB recognized` : 'Supports standard .xlsx and .xls formats'}
+                      {file ? `${(file.size / 1024).toFixed(1)} KB uploaded` : 'Select your Excel survey file'}
                     </p>
                   </div>
                 </div>
@@ -189,13 +189,13 @@ export default function Home() {
                 {(status === 'uploading' || status === 'processing') ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" /> 
-                    <span className="animate-pulse">{status === 'uploading' ? 'Synchronizing File...' : 'Calibrating Report...'}</span>
+                    <span className="animate-pulse">{status === 'uploading' ? 'Reading File...' : 'Creating Report...'}</span>
                   </>
                 ) : (
                   <>
-                    Generate Strategic Report
+                    Create Report
                     <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                        <Globe className="w-3.5 h-3.5 text-white animate-[spin_4s_linear_infinite]" />
+                        <Zap className="w-3.5 h-3.5 text-white" />
                     </div>
                   </>
                 )}
@@ -208,17 +208,17 @@ export default function Home() {
                       <CheckCircle className="w-8 h-8 text-emerald-400" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-white">Analysis Complete</h4>
-                      <p className="text-slate-500 font-medium">Strategic document synthesized and ready.</p>
+                      <h4 className="text-xl font-bold text-white">Report Finished</h4>
+                      <p className="text-slate-500 font-medium">Your report is ready to download.</p>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <button onClick={() => setShowPreview(true)} className="py-4 bg-white/5 hover:bg-white/10 rounded-2xl flex items-center justify-center gap-2 border border-white/5 text-slate-300 font-bold transition-all transform hover:-translate-y-0.5">
-                      <Eye className="w-5 h-5" /> Inspect
+                      <Eye className="w-5 h-5" /> Preview
                     </button>
                     <a href={downloadUrl!} download={`Report_${file?.name.split('.')[0]}.docx`} className="py-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl flex items-center justify-center gap-2 text-white font-bold transition-all transform hover:-translate-y-0.5 shadow-xl shadow-indigo-600/20">
-                      <Download className="w-5 h-5" /> Finalize
+                      <Download className="w-5 h-5" /> Download
                     </a>
                   </div>
                 </div>
@@ -230,21 +230,6 @@ export default function Home() {
                   <p className="text-rose-200/80 text-sm font-medium leading-relaxed">{errorMessage}</p>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Footer Highlights */}
-          <div className="mt-16 flex justify-center items-center gap-8 text-slate-500 text-xs font-bold tracking-[0.2em] uppercase opacity-50">
-            <div className="flex items-center gap-2">
-                <Shield className="w-3 h-3" /> Secure Node
-            </div>
-            <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
-            <div className="flex items-center gap-2">
-                <Sparkles className="w-3 h-3" /> GPT-4 Intelligence
-            </div>
-            <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
-            <div className="flex items-center gap-2">
-                <Globe className="w-3 h-3" /> Global Standard
             </div>
           </div>
         </div>
@@ -261,8 +246,8 @@ export default function Home() {
                   <BarChart3 className="w-6 h-6 text-indigo-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-2xl text-slate-900 tracking-tight">Report Review</h3>
-                  <p className="text-slate-500 text-sm font-medium">Verify strategic insights and calibrate results</p>
+                  <h3 className="font-bold text-2xl text-slate-900 tracking-tight">Preview Report</h3>
+                  <p className="text-slate-500 text-sm font-medium">Check the details and make changes</p>
                 </div>
               </div>
               <button 
@@ -287,10 +272,10 @@ export default function Home() {
               <aside className="w-[420px] bg-white border-l border-slate-100 flex flex-col overflow-hidden shadow-[-10px_0_40px_rgba(0,0,0,0.02)]">
                 <div className="p-8 border-b border-slate-50 bg-indigo-50/20">
                   <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm tracking-widest uppercase mb-2">
-                    <Sparkles className="w-4 h-4" /> Intelligence AI
+                    <Sparkles className="w-4 h-4" /> AI Assistant
                   </div>
                   <p className="text-xs text-slate-500 font-medium leading-relaxed italic">
-                    Request specific revisions, target data corrections, or tonal adjustments.
+                    Tell the AI to change any text or data in the report.
                   </p>
                 </div>
 
@@ -313,7 +298,7 @@ export default function Home() {
                       {chat.status === 'success' && (
                         <div className="mt-3 flex justify-start pl-1">
                             <button onClick={() => document.getElementById('finalDownload')?.click()} className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest hover:underline px-1">
-                                Download Updated Assets →
+                                Download Updated Report →
                             </button>
                         </div>
                       )}
@@ -327,7 +312,7 @@ export default function Home() {
                     <input 
                       value={chatInput} 
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Instruct adjustments..." 
+                      placeholder="Type your changes here..." 
                       className="w-full bg-white border border-slate-200 text-slate-900 text-[15px] rounded-2xl py-4.5 px-6 pr-14 focus:outline-none focus:ring-4 focus:ring-indigo-600/5 focus:border-indigo-600 transition-all font-medium placeholder-slate-400 shadow-sm" 
                     />
                     <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50">
@@ -341,6 +326,9 @@ export default function Home() {
           <a id="finalDownload" href={downloadUrl!} download={`Report_${file?.name.split('.')[0]}.docx`} className="hidden" />
         </div>
       )}
+    </main>
+  );
+}
     </main>
   );
 }
