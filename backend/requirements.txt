@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+pandas
+openai
+python-dotenv
+pydantic
+python-multipart
+python-docx
+xlrd
+openpyxl
+gunicorn
+tabulate
